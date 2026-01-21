@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}CRUD Tank{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo">
+                <span class="fish-icon">🐟</span>
+                <h1>CRUD Tank</h1>
+            </div>
+            <ul class="nav-links">
+                <li><a href="{{ url_for('fish.tank') }}" class="{% if request.endpoint == 'fish.tank' %}active{% endif %}">
+                    <span class="crud-letter">R</span>ead - Tank
+                </a></li>
+                <li><a href="{{ url_for('fish.new_fish') }}" class="{% if request.endpoint == 'fish.new_fish' %}active{% endif %}">
+                    <span class="crud-letter">C</span>reate - Add Fish
+                </a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="flash-messages">
+                    {% for category, message in messages %}
+                        <div class="flash-message {{ category }}">
+                            {{ message }}
+                            <button class="close-flash" onclick="this.parentElement.remove()">×</button>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer>
+        <p>CRUD Tank - An Educational MVC Application</p>
+        <p class="crud-explanation">
+            <span><strong>C</strong>reate</span> |
+            <span><strong>R</strong>ead</span> |
+            <span><strong>U</strong>pdate</span> |
+            <span><strong>D</strong>elete</span>
+        </p>
+    </footer>
+
+    <script src="{{ url_for('static', filename='js/tank.js') }}"></script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>

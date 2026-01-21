@@ -1,0 +1,912 @@
+/* =============================================================================
+   CRUD Tank - Main Stylesheet
+   An Educational MVC Application
+   ============================================================================= */
+
+/* -----------------------------------------------------------------------------
+   CSS Variables & Reset
+   ----------------------------------------------------------------------------- */
+:root {
+    --primary-color: #2196F3;
+    --primary-dark: #1976D2;
+    --secondary-color: #607D8B;
+    --success-color: #4CAF50;
+    --warning-color: #FF9800;
+    --danger-color: #f44336;
+    --create-color: #4CAF50;
+    --read-color: #2196F3;
+    --update-color: #FF9800;
+    --delete-color: #f44336;
+    --background-color: #f5f7fa;
+    --card-background: #ffffff;
+    --text-color: #333333;
+    --text-light: #666666;
+    --border-color: #e0e0e0;
+    --code-background: #1e1e1e;
+    --code-text: #d4d4d4;
+    --tank-water: linear-gradient(180deg, #87CEEB 0%, #1E90FF 50%, #0066CC 100%);
+    --tank-glass: rgba(255, 255, 255, 0.1);
+    --sand-color: #f4d03f;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background-color: var(--background-color);
+    color: var(--text-color);
+    line-height: 1.6;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* -----------------------------------------------------------------------------
+   Header & Navigation
+   ----------------------------------------------------------------------------- */
+header {
+    background: linear-gradient(135deg, #1a237e 0%, #283593 100%);
+    color: white;
+    padding: 1rem 2rem;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+nav {
+    max-width: 1400px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.logo h1 {
+    font-size: 1.75rem;
+    font-weight: 700;
+}
+
+.fish-icon {
+    font-size: 2rem;
+    animation: swim-logo 2s ease-in-out infinite;
+}
+
+@keyframes swim-logo {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    50% { transform: translateY(-3px) rotate(5deg); }
+}
+
+.nav-links {
+    display: flex;
+    list-style: none;
+    gap: 1rem;
+}
+
+.nav-links a {
+    color: white;
+    text-decoration: none;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    font-weight: 500;
+}
+
+.nav-links a:hover,
+.nav-links a.active {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.crud-letter {
+    font-weight: 700;
+    font-size: 1.1em;
+}
+
+/* -----------------------------------------------------------------------------
+   Main Content Area
+   ----------------------------------------------------------------------------- */
+main {
+    flex: 1;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 2rem;
+    width: 100%;
+}
+
+.page-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+}
+
+@media (max-width: 1200px) {
+    .page-container {
+        grid-template-columns: 1fr;
+    }
+}
+
+.content-section,
+.code-section {
+    background: var(--card-background);
+    border-radius: 16px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+.content-section h2,
+.code-section h3 {
+    margin-bottom: 0.5rem;
+}
+
+.page-description {
+    color: var(--text-light);
+    margin-bottom: 1.5rem;
+}
+
+/* -----------------------------------------------------------------------------
+   CRUD Badges
+   ----------------------------------------------------------------------------- */
+.crud-badge {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-right: 0.5rem;
+}
+
+.crud-badge.create { background: var(--create-color); color: white; }
+.crud-badge.read { background: var(--read-color); color: white; }
+.crud-badge.update { background: var(--update-color); color: white; }
+.crud-badge.delete { background: var(--delete-color); color: white; }
+
+/* -----------------------------------------------------------------------------
+   Fish Tank Styles
+   ----------------------------------------------------------------------------- */
+.tank-container {
+    perspective: 1000px;
+}
+
+.tank {
+    position: relative;
+    width: 100%;
+    height: 450px;
+    background: var(--tank-water);
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow:
+        inset 0 0 100px rgba(0, 0, 0, 0.2),
+        0 10px 40px rgba(0, 0, 0, 0.3);
+    border: 8px solid #5d4e37;
+    border-top: 12px solid #6b5b45;
+}
+
+/* Water surface effect */
+.water-surface {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 20px;
+    background: linear-gradient(180deg,
+        rgba(255, 255, 255, 0.4) 0%,
+        rgba(255, 255, 255, 0.1) 50%,
+        transparent 100%);
+    animation: wave 3s ease-in-out infinite;
+}
+
+@keyframes wave {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(3px); }
+}
+
+/* Bubbles */
+.bubbles {
+    position: absolute;
+    bottom: 50px;
+    left: 0;
+    right: 0;
+    height: 100%;
+    pointer-events: none;
+}
+
+.bubble {
+    position: absolute;
+    bottom: 0;
+    width: 10px;
+    height: 10px;
+    background: radial-gradient(circle at 30% 30%,
+        rgba(255, 255, 255, 0.8),
+        rgba(255, 255, 255, 0.2));
+    border-radius: 50%;
+    animation: rise 4s ease-in infinite;
+}
+
+.bubble:nth-child(1) { left: 10%; animation-delay: 0s; animation-duration: 4s; }
+.bubble:nth-child(2) { left: 20%; animation-delay: 1s; animation-duration: 5s; width: 8px; height: 8px; }
+.bubble:nth-child(3) { left: 35%; animation-delay: 2s; animation-duration: 4.5s; }
+.bubble:nth-child(4) { left: 50%; animation-delay: 0.5s; animation-duration: 5.5s; width: 12px; height: 12px; }
+.bubble:nth-child(5) { left: 65%; animation-delay: 1.5s; animation-duration: 4s; width: 6px; height: 6px; }
+.bubble:nth-child(6) { left: 75%; animation-delay: 2.5s; animation-duration: 5s; }
+.bubble:nth-child(7) { left: 85%; animation-delay: 0.8s; animation-duration: 4.2s; width: 9px; height: 9px; }
+.bubble:nth-child(8) { left: 95%; animation-delay: 1.8s; animation-duration: 5.2s; width: 7px; height: 7px; }
+
+@keyframes rise {
+    0% {
+        transform: translateY(0) scale(1);
+        opacity: 0.7;
+    }
+    50% {
+        opacity: 0.5;
+    }
+    100% {
+        transform: translateY(-400px) scale(0.5);
+        opacity: 0;
+    }
+}
+
+/* Tank Decorations */
+.tank-decorations {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 100px;
+    pointer-events: none;
+}
+
+.sand {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 40px;
+    background: linear-gradient(180deg, #daa520 0%, #b8860b 100%);
+    border-radius: 0 0 8px 8px;
+}
+
+.seaweed {
+    position: absolute;
+    bottom: 35px;
+    width: 20px;
+    height: 80px;
+    background: linear-gradient(180deg, #228B22 0%, #006400 100%);
+    border-radius: 50% 50% 0 0;
+    transform-origin: bottom center;
+    animation: sway 3s ease-in-out infinite;
+}
+
+.seaweed-1 { left: 10%; height: 70px; animation-delay: 0s; }
+.seaweed-2 { left: 15%; height: 90px; animation-delay: 0.5s; }
+.seaweed-3 { right: 12%; height: 75px; animation-delay: 1s; }
+
+@keyframes sway {
+    0%, 100% { transform: rotate(-5deg); }
+    50% { transform: rotate(5deg); }
+}
+
+.rock {
+    position: absolute;
+    bottom: 35px;
+    background: linear-gradient(135deg, #696969 0%, #4a4a4a 100%);
+    border-radius: 50% 50% 40% 40%;
+}
+
+.rock-1 {
+    right: 20%;
+    width: 60px;
+    height: 35px;
+}
+
+.rock-2 {
+    right: 25%;
+    width: 40px;
+    height: 25px;
+    bottom: 38px;
+}
+
+/* Fish Container */
+.fish-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 60px;
+}
+
+/* Individual Fish */
+.fish {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+    z-index: 10;
+}
+
+.fish:hover {
+    transform: scale(1.1);
+    z-index: 20;
+}
+
+.fish-link {
+    text-decoration: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.fish-name {
+    background: rgba(0, 0, 0, 0.6);
+    color: white;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    margin-bottom: 4px;
+    white-space: nowrap;
+    max-width: 100px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.fish-image {
+    width: 60px;
+    height: 60px;
+    object-fit: contain;
+    filter: drop-shadow(2px 2px 4px rgba(0, 0, 0, 0.3));
+}
+
+/* Fish swimming animation speeds */
+.fish-slow {
+    animation: swim-slow 12s linear infinite;
+}
+
+.fish-medium {
+    animation: swim-medium 8s linear infinite;
+}
+
+.fish-fast {
+    animation: swim-fast 5s linear infinite;
+}
+
+/* Empty tank message */
+.empty-tank-message {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    color: white;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.empty-tank-message p {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+.fish-count {
+    text-align: center;
+    color: var(--text-light);
+    margin-top: 1rem;
+    font-size: 0.9rem;
+}
+
+/* -----------------------------------------------------------------------------
+   Forms
+   ----------------------------------------------------------------------------- */
+.fish-form {
+    max-width: 500px;
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-group label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: var(--text-color);
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 2px solid var(--border-color);
+    border-radius: 8px;
+    font-size: 1rem;
+    font-family: inherit;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.1);
+}
+
+.form-group small {
+    display: block;
+    color: var(--text-light);
+    font-size: 0.85rem;
+    margin-top: 0.25rem;
+}
+
+.form-group textarea {
+    resize: vertical;
+    min-height: 80px;
+}
+
+.image-preview-container {
+    margin-top: 0.75rem;
+    padding: 1rem;
+    background: var(--background-color);
+    border-radius: 8px;
+    text-align: center;
+    min-height: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.image-preview-container img {
+    max-width: 150px;
+    max-height: 150px;
+    object-fit: contain;
+    border-radius: 8px;
+}
+
+.image-preview-container span {
+    color: var(--text-light);
+    font-size: 0.9rem;
+}
+
+.form-actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 2rem;
+}
+
+/* -----------------------------------------------------------------------------
+   Buttons
+   ----------------------------------------------------------------------------- */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.btn-primary {
+    background: var(--primary-color);
+    color: white;
+}
+
+.btn-primary:hover {
+    background: var(--primary-dark);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(33, 150, 243, 0.4);
+}
+
+.btn-secondary {
+    background: var(--secondary-color);
+    color: white;
+}
+
+.btn-secondary:hover {
+    background: #546E7A;
+}
+
+.btn-warning {
+    background: var(--warning-color);
+    color: white;
+}
+
+.btn-warning:hover {
+    background: #F57C00;
+    transform: translateY(-2px);
+}
+
+.btn-danger {
+    background: var(--danger-color);
+    color: white;
+}
+
+.btn-danger:hover {
+    background: #D32F2F;
+    transform: translateY(-2px);
+}
+
+/* -----------------------------------------------------------------------------
+   Fish Detail Card
+   ----------------------------------------------------------------------------- */
+.fish-detail-card {
+    display: flex;
+    gap: 2rem;
+    padding: 1.5rem;
+    background: var(--background-color);
+    border-radius: 12px;
+}
+
+.fish-image-large {
+    flex-shrink: 0;
+}
+
+.fish-image-large img {
+    width: 200px;
+    height: 200px;
+    object-fit: contain;
+    border-radius: 12px;
+    background: white;
+    padding: 1rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.fish-info h3 {
+    font-size: 1.75rem;
+    margin-bottom: 0.5rem;
+}
+
+.fish-meta {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+}
+
+.personality-badge {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+
+.personality-badge.slow { background: #E3F2FD; color: #1565C0; }
+.personality-badge.medium { background: #E8F5E9; color: #2E7D32; }
+.personality-badge.fast { background: #FFF3E0; color: #E65100; }
+
+.created-date {
+    color: var(--text-light);
+    font-size: 0.9rem;
+}
+
+.fish-description {
+    color: var(--text-color);
+    margin-bottom: 1.5rem;
+    line-height: 1.7;
+}
+
+.fish-description.no-description {
+    color: var(--text-light);
+}
+
+.fish-actions {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+/* -----------------------------------------------------------------------------
+   Delete Confirmation
+   ----------------------------------------------------------------------------- */
+.delete-confirmation {
+    text-align: center;
+    padding: 2rem;
+}
+
+.fish-preview {
+    margin-bottom: 2rem;
+}
+
+.fish-preview img {
+    width: 120px;
+    height: 120px;
+    object-fit: contain;
+    border-radius: 12px;
+    background: var(--background-color);
+    padding: 1rem;
+    margin-bottom: 1rem;
+}
+
+.fish-preview h3 {
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.warning-message {
+    background: #FFF3E0;
+    border: 2px solid var(--warning-color);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.warning-icon {
+    font-size: 2rem;
+    display: block;
+    margin-bottom: 0.5rem;
+}
+
+.warning-message p {
+    font-size: 1.1rem;
+    margin: 0;
+}
+
+.warning-subtext {
+    color: var(--text-light);
+    font-size: 0.9rem !important;
+    margin-top: 0.5rem !important;
+}
+
+.delete-form .form-actions {
+    justify-content: center;
+}
+
+.delete-note {
+    margin-top: 2rem;
+    padding: 1rem;
+    background: #E3F2FD;
+    border-radius: 8px;
+}
+
+.delete-note h4 {
+    margin-bottom: 0.5rem;
+    color: #1565C0;
+}
+
+.delete-note p {
+    margin: 0;
+    font-size: 0.9rem;
+    color: var(--text-color);
+}
+
+/* -----------------------------------------------------------------------------
+   Code Display Section
+   ----------------------------------------------------------------------------- */
+.code-section h3 {
+    margin-bottom: 1rem;
+}
+
+.code-tabs {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.code-tab {
+    padding: 0.5rem 1rem;
+    border: none;
+    background: var(--background-color);
+    border-radius: 8px 8px 0 0;
+    cursor: pointer;
+    font-family: inherit;
+    font-weight: 500;
+    color: var(--text-light);
+    transition: all 0.3s ease;
+}
+
+.code-tab:hover {
+    background: #e0e0e0;
+}
+
+.code-tab.active {
+    background: var(--code-background);
+    color: white;
+}
+
+.code-content {
+    position: relative;
+}
+
+.code-panel {
+    display: none;
+    background: var(--code-background);
+    border-radius: 0 8px 8px 8px;
+    padding: 1rem;
+    overflow: hidden;
+}
+
+.code-panel.active {
+    display: block;
+}
+
+.code-panel h4 {
+    color: #9cdcfe;
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+    font-family: 'Fira Code', monospace;
+}
+
+.code-panel pre {
+    margin: 0;
+    overflow-x: auto;
+}
+
+.code-panel code {
+    font-family: 'Fira Code', 'Consolas', monospace;
+    font-size: 0.85rem;
+    line-height: 1.6;
+    color: var(--code-text);
+    white-space: pre;
+}
+
+/* Basic syntax highlighting simulation */
+.code-panel code {
+    display: block;
+}
+
+/* MVC Explanation */
+.mvc-explanation {
+    margin-top: 1.5rem;
+    padding: 1rem;
+    background: var(--background-color);
+    border-radius: 8px;
+    border-left: 4px solid var(--primary-color);
+}
+
+.mvc-explanation h4 {
+    margin-bottom: 0.75rem;
+    color: var(--primary-color);
+}
+
+.mvc-explanation ol {
+    margin: 0;
+    padding-left: 1.25rem;
+}
+
+.mvc-explanation li {
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+}
+
+.mvc-explanation code {
+    background: rgba(0, 0, 0, 0.1);
+    padding: 0.1rem 0.4rem;
+    border-radius: 4px;
+    font-family: 'Fira Code', monospace;
+    font-size: 0.85rem;
+}
+
+/* -----------------------------------------------------------------------------
+   Flash Messages
+   ----------------------------------------------------------------------------- */
+.flash-messages {
+    margin-bottom: 1.5rem;
+}
+
+.flash-message {
+    padding: 1rem 1.5rem;
+    border-radius: 8px;
+    margin-bottom: 0.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateY(-10px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.flash-message.success {
+    background: #E8F5E9;
+    border: 1px solid var(--success-color);
+    color: #2E7D32;
+}
+
+.flash-message.error {
+    background: #FFEBEE;
+    border: 1px solid var(--danger-color);
+    color: #C62828;
+}
+
+.close-flash {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: inherit;
+    opacity: 0.6;
+    line-height: 1;
+}
+
+.close-flash:hover {
+    opacity: 1;
+}
+
+/* -----------------------------------------------------------------------------
+   Footer
+   ----------------------------------------------------------------------------- */
+footer {
+    background: #263238;
+    color: white;
+    text-align: center;
+    padding: 1.5rem;
+    margin-top: auto;
+}
+
+footer p {
+    margin: 0.25rem 0;
+}
+
+.crud-explanation {
+    font-size: 0.9rem;
+    opacity: 0.8;
+}
+
+.crud-explanation span {
+    margin: 0 0.5rem;
+}
+
+/* -----------------------------------------------------------------------------
+   Responsive Design
+   ----------------------------------------------------------------------------- */
+@media (max-width: 768px) {
+    header {
+        padding: 1rem;
+    }
+
+    nav {
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .nav-links {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    main {
+        padding: 1rem;
+    }
+
+    .fish-detail-card {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+
+    .fish-actions {
+        justify-content: center;
+    }
+
+    .form-actions {
+        flex-direction: column;
+    }
+
+    .tank {
+        height: 350px;
+    }
+}

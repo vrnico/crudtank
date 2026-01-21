@@ -1,0 +1,155 @@
+{% extends "base.html" %}
+
+{% block title %}CRUD Tank - {{ fish.name }} (READ){% endblock %}
+
+{% block content %}
+<div class="page-container detail-page">
+    <div class="content-section">
+        <h2><span class="crud-badge read">READ</span> Fish Details</h2>
+        <p class="page-description">This is also the READ operation - viewing a single fish's details!</p>
+
+        <!-- Fish Detail Card -->
+        <div class="fish-detail-card">
+            <div class="fish-image-large">
+                <img src="{{ fish.image_url }}" alt="{{ fish.name }}" onerror="this.src='https://em-content.zobj.net/source/twitter/376/fish_1f41f.png'">
+            </div>
+            <div class="fish-info">
+                <h3>{{ fish.name }}</h3>
+                <div class="fish-meta">
+                    <span class="personality-badge {{ fish.personality }}">
+                        {% if fish.personality == 'fast' %}⚡{% elif fish.personality == 'slow' %}🐢{% else %}🐟{% endif %}
+                        {{ fish.personality|capitalize }}
+                    </span>
+                    <span class="created-date">Added: {{ fish.created_at[:10] }}</span>
+                </div>
+                {% if fish.description %}
+                <p class="fish-description">{{ fish.description }}</p>
+                {% else %}
+                <p class="fish-description no-description"><em>No description provided</em></p>
+                {% endif %}
+
+                <div class="fish-actions">
+                    <a href="{{ url_for('fish.edit_fish', fish_id=fish.id) }}" class="btn btn-warning">
+                        <span class="crud-letter">U</span>pdate Fish
+                    </a>
+                    <a href="{{ url_for('fish.remove_fish', fish_id=fish.id) }}" class="btn btn-danger">
+                        <span class="crud-letter">D</span>elete Fish
+                    </a>
+                    <a href="{{ url_for('fish.tank') }}" class="btn btn-secondary">Back to Tank</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Code Display Section -->
+    <div class="code-section">
+        <h3>📖 READ (Single) Code</h3>
+
+        <div class="code-tabs">
+            <button class="code-tab active" data-tab="model">Model</button>
+            <button class="code-tab" data-tab="controller">Controller</button>
+            <button class="code-tab" data-tab="view">View</button>
+        </div>
+
+        <div class="code-content">
+            <div class="code-panel active" id="model">
+                <h4>Model: models/fish.py</h4>
+                <pre><code class="language-python"># READ Operation: Get a single fish by ID
+
+def get_fish_by_id(fish_id):
+    """
+    READ Operation: Get a specific fish by its ID.
+
+    Args:
+        fish_id (str): The unique ID of the fish
+
+    Returns:
+        Fish or None: The fish object if found, None otherwise
+    """
+    data = _load_data()
+
+    # Search through all fish for matching ID
+    for item in data:
+        if item['id'] == fish_id:
+            return Fish.from_dict(item)
+
+    # Return None if fish not found
+    return None</code></pre>
+            </div>
+
+            <div class="code-panel" id="controller">
+                <h4>Controller: controllers/fish_controller.py</h4>
+                <pre><code class="language-python"># READ (Show) - Display a single fish's details
+# Route: GET /fish/&lt;id&gt;
+
+@fish_bp.route('/fish/&lt;fish_id&gt;')
+def show_fish(fish_id):
+    """
+    Controller Action: Display a single fish's details
+
+    This action:
+    1. Receives the fish_id from the URL
+    2. Calls the Model's get_fish_by_id() to retrieve the fish
+    3. Passes the fish to the View (detail.html template)
+    """
+    # Call the Model to get the specific fish
+    fish = get_fish_by_id(fish_id)
+
+    if not fish:
+        flash('Fish not found!', 'error')
+        return redirect(url_for('fish.tank'))
+
+    # Render the View with the fish data
+    return render_template('detail.html', fish=fish)</code></pre>
+            </div>
+
+            <div class="code-panel" id="view">
+                <h4>View: templates/detail.html</h4>
+                <pre><code class="language-html">&lt;!-- Display single fish details --&gt;
+&lt;div class="fish-detail-card"&gt;
+
+    &lt;!-- Fish Image --&gt;
+    &lt;img src="&#123;&#123; fish.image_url &#125;&#125;" alt="&#123;&#123; fish.name &#125;&#125;"&gt;
+
+    &lt;!-- Fish Information --&gt;
+    &lt;h3&gt;&#123;&#123; fish.name &#125;&#125;&lt;/h3&gt;
+    &lt;span&gt;&#123;&#123; fish.personality &#125;&#125;&lt;/span&gt;
+    &lt;p&gt;&#123;&#123; fish.description &#125;&#125;&lt;/p&gt;
+
+    &lt;!-- Action Links --&gt;
+    &lt;a href="/fish/&#123;&#123; fish.id &#125;&#125;/edit"&gt;Update&lt;/a&gt;
+    &lt;a href="/fish/&#123;&#123; fish.id &#125;&#125;/delete"&gt;Delete&lt;/a&gt;
+
+&lt;/div&gt;</code></pre>
+            </div>
+        </div>
+
+        <div class="mvc-explanation">
+            <h4>How READ (Single) Works in MVC:</h4>
+            <ol>
+                <li><strong>Request:</strong> User clicks on a fish or visits "/fish/&lt;id&gt;"</li>
+                <li><strong>Controller:</strong> Extracts the fish ID from the URL</li>
+                <li><strong>Model:</strong> <code>get_fish_by_id()</code> searches for the fish</li>
+                <li><strong>Validation:</strong> Controller checks if fish was found</li>
+                <li><strong>View:</strong> Fish data is passed to <code>detail.html</code></li>
+                <li><strong>Response:</strong> Rendered HTML shows fish details</li>
+            </ol>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Tab switching for code panels
+    document.querySelectorAll('.code-tab').forEach(tab => {
+        tab.addEventListener('click', () => {
+            document.querySelectorAll('.code-tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.code-panel').forEach(p => p.classList.remove('active'));
+            tab.classList.add('active');
+            document.getElementById(tab.dataset.tab).classList.add('active');
+        });
+    });
+</script>
+{% endblock %}

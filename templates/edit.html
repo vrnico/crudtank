@@ -1,0 +1,231 @@
+{% extends "base.html" %}
+
+{% block title %}CRUD Tank - Edit {{ fish.name }} (UPDATE){% endblock %}
+
+{% block content %}
+<div class="page-container edit-page">
+    <div class="content-section">
+        <h2><span class="crud-badge update">UPDATE</span> Edit Fish</h2>
+        <p class="page-description">This is the UPDATE operation - modifying an existing fish in the database!</p>
+
+        <!-- Edit Form -->
+        <form method="POST" action="{{ url_for('fish.edit_fish', fish_id=fish.id) }}" class="fish-form">
+            <div class="form-group">
+                <label for="name">Fish Name *</label>
+                <input type="text" id="name" name="name" required
+                       value="{{ fish.name }}"
+                       placeholder="e.g., Nemo, Bubbles, Goldie">
+                <small>This name will appear above your fish in the tank</small>
+            </div>
+
+            <div class="form-group">
+                <label for="image_url">Image URL *</label>
+                <input type="url" id="image_url" name="image_url" required
+                       value="{{ fish.image_url }}"
+                       placeholder="https://example.com/fish.png">
+                <small>Paste a link to a fish image</small>
+                <div class="image-preview-container">
+                    <img id="imagePreview" src="{{ fish.image_url }}" alt="Preview" onerror="this.style.display='none'">
+                    <span id="previewPlaceholder" style="display: none;">Image preview will appear here</span>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="personality">Personality (Swimming Speed)</label>
+                <select id="personality" name="personality">
+                    <option value="slow" {% if fish.personality == 'slow' %}selected{% endif %}>🐢 Slow - Relaxed swimmer</option>
+                    <option value="medium" {% if fish.personality == 'medium' %}selected{% endif %}>🐟 Medium - Normal pace</option>
+                    <option value="fast" {% if fish.personality == 'fast' %}selected{% endif %}>⚡ Fast - Zooms around!</option>
+                </select>
+                <small>Determines how fast your fish swims in the tank</small>
+            </div>
+
+            <div class="form-group">
+                <label for="description">Description</label>
+                <textarea id="description" name="description" rows="3"
+                          placeholder="Tell us about your fish...">{{ fish.description }}</textarea>
+                <small>Optional: A fun description for your fish</small>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn btn-warning">💾 Save Changes</button>
+                <a href="{{ url_for('fish.show_fish', fish_id=fish.id) }}" class="btn btn-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+
+    <!-- Code Display Section -->
+    <div class="code-section">
+        <h3>✏️ UPDATE Code</h3>
+
+        <div class="code-tabs">
+            <button class="code-tab active" data-tab="model">Model</button>
+            <button class="code-tab" data-tab="controller">Controller</button>
+            <button class="code-tab" data-tab="view">View</button>
+        </div>
+
+        <div class="code-content">
+            <div class="code-panel active" id="model">
+                <h4>Model: models/fish.py</h4>
+                <pre><code class="language-python"># UPDATE Operation: Modify an existing fish in the database
+
+def update_fish(fish_id, name=None, image_url=None, personality=None, description=None):
+    """
+    UPDATE Operation: Modify an existing fish's details.
+
+    Args:
+        fish_id (str): The unique ID of the fish to update
+        name (str, optional): New name for the fish
+        image_url (str, optional): New image URL
+        personality (str, optional): New personality type
+        description (str, optional): New description
+
+    Returns:
+        Fish or None: The updated fish object if found
+    """
+    data = _load_data()
+
+    for i, item in enumerate(data):
+        if item['id'] == fish_id:
+            # Update only the fields that were provided
+            if name is not None:
+                data[i]['name'] = name
+            if image_url is not None:
+                data[i]['image_url'] = image_url
+            if personality is not None:
+                data[i]['personality'] = personality
+            if description is not None:
+                data[i]['description'] = description
+
+            _save_data(data)
+            return Fish.from_dict(data[i])
+
+    return None</code></pre>
+            </div>
+
+            <div class="code-panel" id="controller">
+                <h4>Controller: controllers/fish_controller.py</h4>
+                <pre><code class="language-python"># UPDATE - Show edit form and handle fish updates
+# Routes: GET /fish/&lt;id&gt;/edit (show form), POST /fish/&lt;id&gt;/edit (process)
+
+@fish_bp.route('/fish/&lt;fish_id&gt;/edit', methods=['GET', 'POST'])
+def edit_fish(fish_id):
+    """
+    Controller Action: Update an existing fish
+
+    GET: Display the edit form with current fish data
+    POST: Process the form data and update the fish
+    """
+    # First, get the current fish data
+    fish = get_fish_by_id(fish_id)
+
+    if not fish:
+        flash('Fish not found!', 'error')
+        return redirect(url_for('fish.tank'))
+
+    if request.method == 'POST':
+        # Extract updated data from the form
+        name = request.form.get('name')
+        image_url = request.form.get('image_url')
+        personality = request.form.get('personality')
+        description = request.form.get('description')
+
+        # Call the Model to update the fish
+        updated_fish = update_fish(
+            fish_id=fish_id,
+            name=name,
+            image_url=image_url,
+            personality=personality,
+            description=description
+        )
+
+        if updated_fish:
+            flash(f'Fish "{updated_fish.name}" has been updated!', 'success')
+            return redirect(url_for('fish.show_fish', fish_id=fish_id))
+
+    # GET request - show the edit form with current data
+    return render_template('edit.html', fish=fish)</code></pre>
+            </div>
+
+            <div class="code-panel" id="view">
+                <h4>View: templates/edit.html</h4>
+                <pre><code class="language-html">&lt;!-- Edit form pre-populated with current values --&gt;
+&lt;form method="POST" action="/fish/&#123;&#123; fish.id &#125;&#125;/edit"&gt;
+
+    &lt;!-- Name field with current value --&gt;
+    &lt;input type="text" name="name"
+           value="&#123;&#123; fish.name &#125;&#125;" required&gt;
+
+    &lt;!-- Image URL with current value --&gt;
+    &lt;input type="url" name="image_url"
+           value="&#123;&#123; fish.image_url &#125;&#125;" required&gt;
+
+    &lt;!-- Personality with current selection --&gt;
+    &lt;select name="personality"&gt;
+        &lt;option value="slow"
+            {&#37; if fish.personality == 'slow' &#37;}selected{&#37; endif &#37;}&gt;
+            Slow
+        &lt;/option&gt;
+        &lt;!-- ... other options ... --&gt;
+    &lt;/select&gt;
+
+    &lt;!-- Description with current value --&gt;
+    &lt;textarea name="description"&gt;&#123;&#123; fish.description &#125;&#125;&lt;/textarea&gt;
+
+    &lt;button type="submit"&gt;Save Changes&lt;/button&gt;
+&lt;/form&gt;</code></pre>
+            </div>
+        </div>
+
+        <div class="mvc-explanation">
+            <h4>How UPDATE Works in MVC:</h4>
+            <ol>
+                <li><strong>GET Request:</strong> User visits "/fish/&lt;id&gt;/edit"</li>
+                <li><strong>Controller:</strong> Fetches current fish data with <code>get_fish_by_id()</code></li>
+                <li><strong>View:</strong> Form is displayed with current values pre-filled</li>
+                <li><strong>User Input:</strong> User modifies fields and submits</li>
+                <li><strong>POST Request:</strong> Updated data is sent to the server</li>
+                <li><strong>Model:</strong> <code>update_fish()</code> modifies and saves the data</li>
+                <li><strong>Response:</strong> Redirect to detail page with success message</li>
+            </ol>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Tab switching for code panels
+    document.querySelectorAll('.code-tab').forEach(tab => {
+        tab.addEventListener('click', () => {
+            document.querySelectorAll('.code-tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.code-panel').forEach(p => p.classList.remove('active'));
+            tab.classList.add('active');
+            document.getElementById(tab.dataset.tab).classList.add('active');
+        });
+    });
+
+    // Image preview
+    document.getElementById('image_url').addEventListener('input', function() {
+        const preview = document.getElementById('imagePreview');
+        const placeholder = document.getElementById('previewPlaceholder');
+        const url = this.value;
+
+        if (url) {
+            preview.src = url;
+            preview.style.display = 'block';
+            placeholder.style.display = 'none';
+            preview.onerror = function() {
+                preview.style.display = 'none';
+                placeholder.style.display = 'block';
+                placeholder.textContent = 'Invalid image URL';
+            };
+        } else {
+            preview.style.display = 'none';
+            placeholder.style.display = 'block';
+            placeholder.textContent = 'Image preview will appear here';
+        }
+    });
+</script>
+{% endblock %}

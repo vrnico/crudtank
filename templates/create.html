@@ -1,0 +1,217 @@
+{% extends "base.html" %}
+
+{% block title %}CRUD Tank - Add a Fish (CREATE){% endblock %}
+
+{% block content %}
+<div class="page-container create-page">
+    <div class="content-section">
+        <h2><span class="crud-badge create">CREATE</span> Add a New Fish</h2>
+        <p class="page-description">This is the CREATE operation - adding a new fish to the database!</p>
+
+        <!-- Create Form -->
+        <form method="POST" action="{{ url_for('fish.new_fish') }}" class="fish-form">
+            <div class="form-group">
+                <label for="name">Fish Name *</label>
+                <input type="text" id="name" name="name" required
+                       placeholder="e.g., Nemo, Bubbles, Goldie">
+                <small>This name will appear above your fish in the tank</small>
+            </div>
+
+            <div class="form-group">
+                <label for="image_url">Image URL *</label>
+                <input type="url" id="image_url" name="image_url" required
+                       placeholder="https://example.com/fish.png">
+                <small>Paste a link to a fish image (try Google Image Search!)</small>
+                <div class="image-preview-container">
+                    <img id="imagePreview" src="" alt="Preview" style="display: none;">
+                    <span id="previewPlaceholder">Image preview will appear here</span>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="personality">Personality (Swimming Speed)</label>
+                <select id="personality" name="personality">
+                    <option value="slow">🐢 Slow - Relaxed swimmer</option>
+                    <option value="medium" selected>🐟 Medium - Normal pace</option>
+                    <option value="fast">⚡ Fast - Zooms around!</option>
+                </select>
+                <small>Determines how fast your fish swims in the tank</small>
+            </div>
+
+            <div class="form-group">
+                <label for="description">Description</label>
+                <textarea id="description" name="description" rows="3"
+                          placeholder="Tell us about your fish..."></textarea>
+                <small>Optional: A fun description for your fish</small>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">🐟 Add Fish to Tank</button>
+                <a href="{{ url_for('fish.tank') }}" class="btn btn-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+
+    <!-- Code Display Section -->
+    <div class="code-section">
+        <h3>📝 CREATE Code</h3>
+
+        <div class="code-tabs">
+            <button class="code-tab active" data-tab="model">Model</button>
+            <button class="code-tab" data-tab="controller">Controller</button>
+            <button class="code-tab" data-tab="view">View</button>
+        </div>
+
+        <div class="code-content">
+            <div class="code-panel active" id="model">
+                <h4>Model: models/fish.py</h4>
+                <pre><code class="language-python"># CREATE Operation: Add a new fish to the database
+
+def create_fish(name, image_url, personality='medium', description=''):
+    """
+    CREATE Operation: Add a new fish to the tank.
+
+    Args:
+        name (str): The fish's display name
+        image_url (str): URL to the fish's image
+        personality (str): Swimming speed - 'fast', 'medium', or 'slow'
+        description (str): Optional description of the fish
+
+    Returns:
+        Fish: The newly created fish object
+    """
+    # Create a new Fish instance with a unique ID
+    fish = Fish(
+        name=name,
+        image_url=image_url,
+        personality=personality,
+        description=description
+    )
+
+    # Load existing data, add new fish, and save
+    data = _load_data()
+    data.append(fish.to_dict())
+    _save_data(data)
+
+    return fish</code></pre>
+            </div>
+
+            <div class="code-panel" id="controller">
+                <h4>Controller: controllers/fish_controller.py</h4>
+                <pre><code class="language-python"># CREATE - Show form and handle new fish creation
+# Routes: GET /fish/new (show form), POST /fish/new (process form)
+
+@fish_bp.route('/fish/new', methods=['GET', 'POST'])
+def new_fish():
+    """
+    Controller Action: Create a new fish
+
+    GET: Display the create form
+    POST: Process the form data and create the fish
+    """
+    if request.method == 'POST':
+        # Extract data from the form submission
+        name = request.form.get('name')
+        image_url = request.form.get('image_url')
+        personality = request.form.get('personality', 'medium')
+        description = request.form.get('description', '')
+
+        # Validate required fields
+        if not name or not image_url:
+            flash('Name and Image URL are required!', 'error')
+            return render_template('create.html')
+
+        # Call the Model to create the fish
+        fish = create_fish(
+            name=name,
+            image_url=image_url,
+            personality=personality,
+            description=description
+        )
+
+        flash(f'Fish "{fish.name}" has been added!', 'success')
+        return redirect(url_for('fish.tank'))
+
+    # GET request - just show the form
+    return render_template('create.html')</code></pre>
+            </div>
+
+            <div class="code-panel" id="view">
+                <h4>View: templates/create.html</h4>
+                <pre><code class="language-html">&lt;!-- The form collects user input --&gt;
+&lt;form method="POST" action="/fish/new"&gt;
+
+    &lt;!-- Name field --&gt;
+    &lt;input type="text" name="name" required&gt;
+
+    &lt;!-- Image URL field --&gt;
+    &lt;input type="url" name="image_url" required&gt;
+
+    &lt;!-- Personality dropdown --&gt;
+    &lt;select name="personality"&gt;
+        &lt;option value="slow"&gt;Slow&lt;/option&gt;
+        &lt;option value="medium"&gt;Medium&lt;/option&gt;
+        &lt;option value="fast"&gt;Fast&lt;/option&gt;
+    &lt;/select&gt;
+
+    &lt;!-- Description textarea --&gt;
+    &lt;textarea name="description"&gt;&lt;/textarea&gt;
+
+    &lt;!-- Submit button --&gt;
+    &lt;button type="submit"&gt;Add Fish&lt;/button&gt;
+
+&lt;/form&gt;</code></pre>
+            </div>
+        </div>
+
+        <div class="mvc-explanation">
+            <h4>How CREATE Works in MVC:</h4>
+            <ol>
+                <li><strong>GET Request:</strong> User visits "/fish/new" - form is displayed</li>
+                <li><strong>User Input:</strong> User fills out the form and clicks Submit</li>
+                <li><strong>POST Request:</strong> Form data is sent to the server</li>
+                <li><strong>Controller:</strong> Extracts and validates form data</li>
+                <li><strong>Model:</strong> <code>create_fish()</code> creates and saves the fish</li>
+                <li><strong>Response:</strong> Redirect to tank with success message</li>
+            </ol>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Tab switching for code panels
+    document.querySelectorAll('.code-tab').forEach(tab => {
+        tab.addEventListener('click', () => {
+            document.querySelectorAll('.code-tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.code-panel').forEach(p => p.classList.remove('active'));
+            tab.classList.add('active');
+            document.getElementById(tab.dataset.tab).classList.add('active');
+        });
+    });
+
+    // Image preview
+    document.getElementById('image_url').addEventListener('input', function() {
+        const preview = document.getElementById('imagePreview');
+        const placeholder = document.getElementById('previewPlaceholder');
+        const url = this.value;
+
+        if (url) {
+            preview.src = url;
+            preview.style.display = 'block';
+            placeholder.style.display = 'none';
+            preview.onerror = function() {
+                preview.style.display = 'none';
+                placeholder.style.display = 'block';
+                placeholder.textContent = 'Invalid image URL';
+            };
+        } else {
+            preview.style.display = 'none';
+            placeholder.style.display = 'block';
+            placeholder.textContent = 'Image preview will appear here';
+        }
+    });
+</script>
+{% endblock %}

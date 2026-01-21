@@ -1,0 +1,169 @@
+{% extends "base.html" %}
+
+{% block title %}CRUD Tank - Delete {{ fish.name }} (DELETE){% endblock %}
+
+{% block content %}
+<div class="page-container delete-page">
+    <div class="content-section">
+        <h2><span class="crud-badge delete">DELETE</span> Remove Fish</h2>
+        <p class="page-description">This is the DELETE operation - removing a fish from the database!</p>
+
+        <!-- Delete Confirmation -->
+        <div class="delete-confirmation">
+            <div class="fish-preview">
+                <img src="{{ fish.image_url }}" alt="{{ fish.name }}" onerror="this.src='https://em-content.zobj.net/source/twitter/376/fish_1f41f.png'">
+                <h3>{{ fish.name }}</h3>
+                <span class="personality-badge {{ fish.personality }}">
+                    {% if fish.personality == 'fast' %}⚡{% elif fish.personality == 'slow' %}🐢{% else %}🐟{% endif %}
+                    {{ fish.personality|capitalize }}
+                </span>
+            </div>
+
+            <div class="warning-message">
+                <span class="warning-icon">⚠️</span>
+                <p>Are you sure you want to remove <strong>{{ fish.name }}</strong> from the tank?</p>
+                <p class="warning-subtext">This action cannot be undone!</p>
+            </div>
+
+            <form method="POST" action="{{ url_for('fish.remove_fish', fish_id=fish.id) }}" class="delete-form">
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-danger">🗑️ Yes, Delete Fish</button>
+                    <a href="{{ url_for('fish.show_fish', fish_id=fish.id) }}" class="btn btn-secondary">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Code Display Section -->
+    <div class="code-section">
+        <h3>🗑️ DELETE Code</h3>
+
+        <div class="code-tabs">
+            <button class="code-tab active" data-tab="model">Model</button>
+            <button class="code-tab" data-tab="controller">Controller</button>
+            <button class="code-tab" data-tab="view">View</button>
+        </div>
+
+        <div class="code-content">
+            <div class="code-panel active" id="model">
+                <h4>Model: models/fish.py</h4>
+                <pre><code class="language-python"># DELETE Operation: Remove a fish from the database
+
+def delete_fish(fish_id):
+    """
+    DELETE Operation: Remove a fish from the tank.
+
+    Args:
+        fish_id (str): The unique ID of the fish to delete
+
+    Returns:
+        bool: True if the fish was deleted, False if not found
+    """
+    data = _load_data()
+    original_length = len(data)
+
+    # Filter out the fish with the matching ID
+    # This creates a new list without the deleted fish
+    data = [item for item in data if item['id'] != fish_id]
+
+    # Check if a fish was actually removed
+    if len(data) < original_length:
+        _save_data(data)
+        return True
+
+    return False</code></pre>
+            </div>
+
+            <div class="code-panel" id="controller">
+                <h4>Controller: controllers/fish_controller.py</h4>
+                <pre><code class="language-python"># DELETE - Show confirmation and handle fish deletion
+# Routes: GET /fish/&lt;id&gt;/delete (confirm), POST /fish/&lt;id&gt;/delete (delete)
+
+@fish_bp.route('/fish/&lt;fish_id&gt;/delete', methods=['GET', 'POST'])
+def remove_fish(fish_id):
+    """
+    Controller Action: Delete a fish
+
+    GET: Display the delete confirmation page
+    POST: Process the deletion
+    """
+    # Get the fish to show its details on the confirmation page
+    fish = get_fish_by_id(fish_id)
+
+    if not fish:
+        flash('Fish not found!', 'error')
+        return redirect(url_for('fish.tank'))
+
+    if request.method == 'POST':
+        # Call the Model to delete the fish
+        fish_name = fish.name
+        success = delete_fish(fish_id)
+
+        if success:
+            flash(f'Fish "{fish_name}" has been removed.', 'success')
+            return redirect(url_for('fish.tank'))
+        else:
+            flash('Failed to delete fish.', 'error')
+
+    # GET request - show the delete confirmation page
+    return render_template('delete.html', fish=fish)</code></pre>
+            </div>
+
+            <div class="code-panel" id="view">
+                <h4>View: templates/delete.html</h4>
+                <pre><code class="language-html">&lt;!-- Delete confirmation page --&gt;
+&lt;div class="delete-confirmation"&gt;
+
+    &lt;!-- Show fish info so user knows what they're deleting --&gt;
+    &lt;img src="&#123;&#123; fish.image_url &#125;&#125;" alt="&#123;&#123; fish.name &#125;&#125;"&gt;
+    &lt;h3&gt;&#123;&#123; fish.name &#125;&#125;&lt;/h3&gt;
+
+    &lt;!-- Warning message --&gt;
+    &lt;p&gt;Are you sure you want to delete &#123;&#123; fish.name &#125;&#125;?&lt;/p&gt;
+    &lt;p&gt;This action cannot be undone!&lt;/p&gt;
+
+    &lt;!-- Delete form (POST request) --&gt;
+    &lt;form method="POST" action="/fish/&#123;&#123; fish.id &#125;&#125;/delete"&gt;
+        &lt;button type="submit"&gt;Yes, Delete Fish&lt;/button&gt;
+        &lt;a href="/fish/&#123;&#123; fish.id &#125;&#125;"&gt;Cancel&lt;/a&gt;
+    &lt;/form&gt;
+
+&lt;/div&gt;</code></pre>
+            </div>
+        </div>
+
+        <div class="mvc-explanation">
+            <h4>How DELETE Works in MVC:</h4>
+            <ol>
+                <li><strong>GET Request:</strong> User visits "/fish/&lt;id&gt;/delete"</li>
+                <li><strong>Controller:</strong> Fetches fish data with <code>get_fish_by_id()</code></li>
+                <li><strong>View:</strong> Confirmation page shows fish info and warning</li>
+                <li><strong>User Action:</strong> User confirms by clicking Delete button</li>
+                <li><strong>POST Request:</strong> Deletion request is sent to the server</li>
+                <li><strong>Model:</strong> <code>delete_fish()</code> removes fish from database</li>
+                <li><strong>Response:</strong> Redirect to tank with success message</li>
+            </ol>
+        </div>
+
+        <div class="delete-note">
+            <h4>💡 Why Confirmation?</h4>
+            <p>DELETE operations should always require confirmation because they're <strong>destructive</strong> and <strong>irreversible</strong>. This is a common UX pattern to prevent accidental data loss.</p>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Tab switching for code panels
+    document.querySelectorAll('.code-tab').forEach(tab => {
+        tab.addEventListener('click', () => {
+            document.querySelectorAll('.code-tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.code-panel').forEach(p => p.classList.remove('active'));
+            tab.classList.add('active');
+            document.getElementById(tab.dataset.tab).classList.add('active');
+        });
+    });
+</script>
+{% endblock %}

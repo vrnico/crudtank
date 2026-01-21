@@ -1,0 +1,181 @@
+{% extends "base.html" %}
+
+{% block title %}CRUD Tank - The Fish Tank (READ){% endblock %}
+
+{% block content %}
+<div class="page-container tank-page">
+    <div class="content-section">
+        <h2><span class="crud-badge read">READ</span> The Fish Tank</h2>
+        <p class="page-description">This is the READ operation - displaying all fish from the database!</p>
+
+        <!-- The Fish Tank -->
+        <div class="tank-container">
+            <div class="tank">
+                <!-- Water effect layers -->
+                <div class="water-surface"></div>
+                <div class="bubbles">
+                    <div class="bubble"></div>
+                    <div class="bubble"></div>
+                    <div class="bubble"></div>
+                    <div class="bubble"></div>
+                    <div class="bubble"></div>
+                    <div class="bubble"></div>
+                    <div class="bubble"></div>
+                    <div class="bubble"></div>
+                </div>
+                <div class="tank-decorations">
+                    <div class="seaweed seaweed-1"></div>
+                    <div class="seaweed seaweed-2"></div>
+                    <div class="seaweed seaweed-3"></div>
+                    <div class="rock rock-1"></div>
+                    <div class="rock rock-2"></div>
+                    <div class="sand"></div>
+                </div>
+
+                <!-- Fish will be rendered here -->
+                <div class="fish-container" id="fishContainer">
+                    {% if fish_list %}
+                        {% for fish in fish_list %}
+                        <div class="fish fish-{{ fish.personality }}"
+                             data-fish-id="{{ fish.id }}"
+                             data-personality="{{ fish.personality }}"
+                             style="top: {{ range(10, 70)|random }}%; left: {{ range(5, 80)|random }}%;">
+                            <a href="{{ url_for('fish.show_fish', fish_id=fish.id) }}" class="fish-link">
+                                <span class="fish-name">{{ fish.name }}</span>
+                                <img src="{{ fish.image_url }}" alt="{{ fish.name }}" class="fish-image" onerror="this.src='https://em-content.zobj.net/source/twitter/376/fish_1f41f.png'">
+                            </a>
+                        </div>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+
+                {% if not fish_list %}
+                <div class="empty-tank-message">
+                    <p>🐟 The tank is empty!</p>
+                    <a href="{{ url_for('fish.new_fish') }}" class="btn btn-primary">Add Your First Fish</a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        {% if fish_list %}
+        <p class="fish-count">{{ fish_list|length }} fish swimming in the tank</p>
+        {% endif %}
+    </div>
+
+    <!-- Code Display Section -->
+    <div class="code-section">
+        <h3>📖 READ Code</h3>
+
+        <div class="code-tabs">
+            <button class="code-tab active" data-tab="model">Model</button>
+            <button class="code-tab" data-tab="controller">Controller</button>
+            <button class="code-tab" data-tab="view">View</button>
+        </div>
+
+        <div class="code-content">
+            <div class="code-panel active" id="model">
+                <h4>Model: models/fish.py</h4>
+                <pre><code class="language-python"># READ Operation: Get all fish from the tank
+
+def get_all_fish():
+    """
+    READ Operation: Get all fish from the tank.
+
+    Returns:
+        list[Fish]: List of all fish objects
+    """
+    data = _load_data()  # Load from JSON file
+    return [Fish.from_dict(item) for item in data]
+
+
+def get_fish_by_id(fish_id):
+    """
+    READ Operation: Get a specific fish by its ID.
+
+    Args:
+        fish_id (str): The unique ID of the fish
+
+    Returns:
+        Fish or None: The fish object if found
+    """
+    data = _load_data()
+    for item in data:
+        if item['id'] == fish_id:
+            return Fish.from_dict(item)
+    return None</code></pre>
+            </div>
+
+            <div class="code-panel" id="controller">
+                <h4>Controller: controllers/fish_controller.py</h4>
+                <pre><code class="language-python"># READ (Index) - Display the fish tank with all fish
+# Route: GET /
+
+@fish_bp.route('/')
+def tank():
+    """
+    Controller Action: Display the fish tank (READ all fish)
+
+    This action:
+    1. Calls the Model's get_all_fish() to retrieve data
+    2. Passes the data to the View (tank.html template)
+    3. Returns the rendered HTML response
+    """
+    # Call the Model to get all fish
+    fish_list = get_all_fish()
+
+    # Render the View with the data
+    return render_template('tank.html', fish_list=fish_list)</code></pre>
+            </div>
+
+            <div class="code-panel" id="view">
+                <h4>View: templates/tank.html</h4>
+                <pre><code class="language-html">&lt;!-- The View receives data from the Controller --&gt;
+&lt;!-- and renders it as HTML --&gt;
+
+&lt;div class="fish-container"&gt;
+    {&#37; for fish in fish_list &#37;}
+    &lt;div class="fish"&gt;
+        &lt;span class="fish-name"&gt;&#123;&#123; fish.name &#125;&#125;&lt;/span&gt;
+        &lt;img src="&#123;&#123; fish.image_url &#125;&#125;" alt="&#123;&#123; fish.name &#125;&#125;"&gt;
+    &lt;/div&gt;
+    {&#37; endfor &#37;}
+&lt;/div&gt;
+
+{&#37; if not fish_list &#37;}
+&lt;p&gt;The tank is empty!&lt;/p&gt;
+{&#37; endif &#37;}</code></pre>
+            </div>
+        </div>
+
+        <div class="mvc-explanation">
+            <h4>How READ Works in MVC:</h4>
+            <ol>
+                <li><strong>Request:</strong> User visits the "/" URL</li>
+                <li><strong>Controller:</strong> The <code>tank()</code> function receives the request</li>
+                <li><strong>Model:</strong> Controller calls <code>get_all_fish()</code> to fetch data</li>
+                <li><strong>View:</strong> Controller passes data to <code>tank.html</code> template</li>
+                <li><strong>Response:</strong> Rendered HTML is sent back to the user</li>
+            </ol>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Tab switching for code panels
+    document.querySelectorAll('.code-tab').forEach(tab => {
+        tab.addEventListener('click', () => {
+            // Remove active from all tabs and panels
+            document.querySelectorAll('.code-tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.code-panel').forEach(p => p.classList.remove('active'));
+
+            // Add active to clicked tab and corresponding panel
+            tab.classList.add('active');
+            document.getElementById(tab.dataset.tab).classList.add('active');
+        });
+    });
+</script>
+{% endblock %}
