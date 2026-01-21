@@ -59,6 +59,7 @@ def new_fish():
         image_url = request.form.get('image_url')
         personality = request.form.get('personality', 'medium')
         description = request.form.get('description', '')
+        color = request.form.get('color', 'none')
 
         # Validate required fields
         if not name or not image_url:
@@ -70,7 +71,8 @@ def new_fish():
             name=name,
             image_url=image_url,
             personality=personality,
-            description=description
+            description=description,
+            color=color
         )
 
         flash(f'Fish "{fish.name}" has been added to the tank!', 'success')
@@ -130,6 +132,7 @@ def edit_fish(fish_id):
         image_url = request.form.get('image_url')
         personality = request.form.get('personality')
         description = request.form.get('description')
+        color = request.form.get('color')
 
         # Call the Model to update the fish
         updated_fish = update_fish(
@@ -137,7 +140,8 @@ def edit_fish(fish_id):
             name=name,
             image_url=image_url,
             personality=personality,
-            description=description
+            description=description,
+            color=color
         )
 
         if updated_fish:

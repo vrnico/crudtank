@@ -6,7 +6,7 @@ A Flask MVC application for teaching CRUD operations using a fun fish tank metap
 
 ## About
 
-**Created by Neek for [Multiverse School](https://www.multiverse.io/)**
+**Created by Neek for [The Multiverse School](https://themultiverse.school/)**
 
 This application is meant to be used for **educational purposes only**.
 

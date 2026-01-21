@@ -1,10 +1,28 @@
 [
   {
-    "id": "9fd62f18-fd8a-40dd-8271-c5f6f87a9d66",
-    "name": "Crudhead",
-    "image_url": "https://i.pinimg.com/originals/b2/40/05/b24005333b8d0bf9391096f573ce4b4e.gif",
-    "personality": "medium",
-    "description": "he's okay I guess",
-    "created_at": "2026-01-21T07:48:02.276196"
+    "id": "6d48b271-6921-4224-b68d-8806363652f0",
+    "name": "Raynbeaux",
+    "image_url": "https://i.pinimg.com/originals/71/21/d5/7121d581f292b50843cd7f70d91dd9ef.gif",
+    "personality": "slow",
+    "description": "they can breathe underwater",
+    "created_at": "2026-01-21T08:32:10.027718"
+  },
+  {
+    "id": "61d73437-38f8-44ce-84fc-9af2a1ffc663",
+    "name": "Dancing Baby",
+    "image_url": "https://d15k2d11r6t6rl.cloudfront.net/pub/bfra/igj8ysms/vy8/dgu/mj0/dancing-baby-90s.gif",
+    "personality": "fast",
+    "description": "he's dancin!",
+    "color": "blue",
+    "created_at": "2026-01-21T08:58:38.789915"
+  },
+  {
+    "id": "53ac875e-4789-422a-9a51-5adce3636c94",
+    "name": "Genius",
+    "image_url": "https://media0.giphy.com/media/v1.Y2lkPTZjMDliOTUyNmt5dWY2M2dtbWxvNWlobWlrNnFkNTJtcWF5a2R0cnFldzBnYWVzZiZlcD12MV9zdGlja2Vyc19zZWFyY2gmY3Q9cw/AdndihCYz96gHOtksS/200.gif",
+    "personality": "slow",
+    "description": "Everyone loves her!",
+    "color": "pink",
+    "created_at": "2026-01-21T09:01:40.963729"
   }
 ]

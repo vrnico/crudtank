@@ -25,12 +25,13 @@ class Fish:
         created_at (str): Timestamp when the fish was created
     """
 
-    def __init__(self, name, image_url, personality='medium', description='', id=None, created_at=None):
+    def __init__(self, name, image_url, personality='medium', description='', color='none', id=None, created_at=None):
         self.id = id or str(uuid.uuid4())
         self.name = name
         self.image_url = image_url
         self.personality = personality  # 'fast', 'medium', 'slow'
         self.description = description
+        self.color = color  # 'none', 'red', 'orange', 'yellow', 'green', 'cyan', 'blue', 'purple', 'pink'
         self.created_at = created_at or datetime.now().isoformat()
 
     def to_dict(self):
@@ -41,6 +42,7 @@ class Fish:
             'image_url': self.image_url,
             'personality': self.personality,
             'description': self.description,
+            'color': self.color,
             'created_at': self.created_at
         }
 
@@ -53,6 +55,7 @@ class Fish:
             image_url=data.get('image_url'),
             personality=data.get('personality', 'medium'),
             description=data.get('description', ''),
+            color=data.get('color', 'none'),
             created_at=data.get('created_at')
         )
 
@@ -79,7 +82,7 @@ def _save_data(data):
 # -----------------------------------------------------------------------------
 # CREATE - Add a new fish to the database
 # -----------------------------------------------------------------------------
-def create_fish(name, image_url, personality='medium', description=''):
+def create_fish(name, image_url, personality='medium', description='', color='none'):
     """
     CREATE Operation: Add a new fish to the tank.
 
@@ -88,6 +91,7 @@ def create_fish(name, image_url, personality='medium', description=''):
         image_url (str): URL to the fish's image
         personality (str): Swimming speed - 'fast', 'medium', or 'slow'
         description (str): Optional description of the fish
+        color (str): Color tint - 'none', 'red', 'orange', 'yellow', 'green', 'cyan', 'blue', 'purple', 'pink'
 
     Returns:
         Fish: The newly created fish object
@@ -97,7 +101,8 @@ def create_fish(name, image_url, personality='medium', description=''):
         name=name,
         image_url=image_url,
         personality=personality,
-        description=description
+        description=description,
+        color=color
     )
 
     # Load existing data, add new fish, and save
@@ -142,7 +147,7 @@ def get_fish_by_id(fish_id):
 # -----------------------------------------------------------------------------
 # UPDATE - Modify an existing fish in the database
 # -----------------------------------------------------------------------------
-def update_fish(fish_id, name=None, image_url=None, personality=None, description=None):
+def update_fish(fish_id, name=None, image_url=None, personality=None, description=None, color=None):
     """
     UPDATE Operation: Modify an existing fish's details.
 
@@ -152,6 +157,7 @@ def update_fish(fish_id, name=None, image_url=None, personality=None, descriptio
         image_url (str, optional): New image URL
         personality (str, optional): New personality type
         description (str, optional): New description
+        color (str, optional): New color tint
 
     Returns:
         Fish or None: The updated fish object if found, None otherwise
@@ -169,6 +175,8 @@ def update_fish(fish_id, name=None, image_url=None, personality=None, descriptio
                 data[i]['personality'] = personality
             if description is not None:
                 data[i]['description'] = description
+            if color is not None:
+                data[i]['color'] = color
 
             _save_data(data)
             return Fish.from_dict(data[i])

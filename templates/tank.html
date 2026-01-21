@@ -42,7 +42,19 @@
                              style="top: {{ range(10, 70)|random }}%; left: {{ range(5, 80)|random }}%;">
                             <a href="{{ url_for('fish.show_fish', fish_id=fish.id) }}" class="fish-link">
                                 <span class="fish-name">{{ fish.name }}</span>
-                                <img src="{{ fish.image_url }}" alt="{{ fish.name }}" class="fish-image" onerror="this.src='https://em-content.zobj.net/source/twitter/376/fish_1f41f.png'">
+                                {% set color_filters = {
+                                    'red': 'sepia(1) saturate(5) hue-rotate(0deg)',
+                                    'orange': 'sepia(1) saturate(5) hue-rotate(30deg)',
+                                    'yellow': 'sepia(1) saturate(5) hue-rotate(60deg)',
+                                    'green': 'sepia(1) saturate(5) hue-rotate(90deg)',
+                                    'cyan': 'sepia(1) saturate(5) hue-rotate(150deg)',
+                                    'blue': 'sepia(1) saturate(5) hue-rotate(200deg)',
+                                    'purple': 'sepia(1) saturate(5) hue-rotate(270deg)',
+                                    'pink': 'sepia(1) saturate(5) hue-rotate(300deg)'
+                                } %}
+                                <img src="{{ fish.image_url }}" alt="{{ fish.name }}" class="fish-image"
+                                     {% if fish.color and fish.color != 'none' %}style="filter: {{ color_filters[fish.color] }} drop-shadow(2px 2px 4px rgba(0, 0, 0, 0.3));"{% endif %}
+                                     onerror="this.src='https://em-content.zobj.net/source/twitter/376/fish_1f41f.png'">
                             </a>
                         </div>
                         {% endfor %}
